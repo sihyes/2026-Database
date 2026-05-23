@@ -1,12 +1,59 @@
+/*1. region*/
+CREATE TABLE region (
+    region_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_name VARCHAR(50) NOT NULL,
+    city VARCHAR(50) NOT NULL
+);
+/*2. customer*/
+CREATE TABLE customer (
+    customer_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    age INT NOT NULL,
+    gender VARCHAR(10),
+    region_id INT,
+    current_grade VARCHAR(20) DEFAULT 'Bronze',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (region_id)
+        REFERENCES region(region_id)
+);
+/*3. customer_history     ← customer, region 참조*/
+CREATE TABLE customer_history (
+    history_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    old_region_id INT,
+    new_region_id INT,
+    old_grade VARCHAR(20),
+    new_grade VARCHAR(20),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (customer_id)
+        REFERENCES customer(customer_id),
+
+    FOREIGN KEY (old_region_id)
+        REFERENCES region(region_id),
+
+    FOREIGN KEY (new_region_id)
+        REFERENCES region(region_id)
+);
 /*
-1. region
-2. customer
-3. customer_history     ← customer, region 참조
 4. restaurant           ← region 참조
 5. menu                 ← restaurant 참조
 6. menu_price_history   ← menu 참조
 7. delivery_fee
-8. delivery_address     ← customer 참조
+*/
+/*8. delivery_address     ← customer 참조*/
+CREATE TABLE delivery_address (
+    address_id INT PRIMARY KEY AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    address_detail VARCHAR(200) NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+
+    FOREIGN KEY (customer_id)
+        REFERENCES customer(customer_id)
+);
+/*
 9. coupon
 10. orders              ← customer, restaurant, delivery_fee, delivery_address, coupon 참조
 11. order_item          ← orders, menu 참조
