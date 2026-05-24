@@ -8,7 +8,7 @@ public class DBUtil {
 
     private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
     private static final String USER = "root";
-    private static final String PASSWORD = "비밀번호";
+    private static final String PASSWORD = "0000";
 
     private static Connection connection = null;
 
