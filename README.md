@@ -3,7 +3,7 @@
 ### 폴더 구조
 ```
 src/
-├── Main.java                  # 진입점, 메인 메뉴 루프
+├── com.delivery.Main.java                  # 진입점, 메인 메뉴 루프
 │
 ├── db/
 │   └── DBConnection.java      # DB 연결 관리
