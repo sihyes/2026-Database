@@ -23,4 +23,22 @@ public class RestaurantDAO {
         pstmt.setInt(1, restaurantId);
         return pstmt.executeQuery();
     }
+
+    // 메뉴 단가 조회
+    public ResultSet getMenuPrice(int menuId) throws SQLException {
+        String sql = "SELECT current_price FROM menu WHERE menu_id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, menuId);
+        return pstmt.executeQuery();
+    }
+
+    // 식당 메뉴 검증
+    public ResultSet getMenuByIdAndRestaurant(int menuId, int restaurantId) throws SQLException {
+        String sql = "SELECT current_price FROM menu " +
+                "WHERE menu_id = ? AND restaurant_id = ? AND is_available = TRUE";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, menuId);
+        pstmt.setInt(2, restaurantId);
+        return pstmt.executeQuery();
+    }
 }

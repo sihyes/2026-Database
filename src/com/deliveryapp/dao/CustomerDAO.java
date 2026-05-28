@@ -32,7 +32,7 @@ public class CustomerDAO {
     }
 
     // 변경 전 매출
-    public ResultSet getOrderStatBeforeChange(int customerId) throws SQLException {
+    public ResultSet getOrderStatBeforeChange(int customerId, Timestamp changedAt) throws SQLException {
         String sql = "SELECT COUNT(*) AS order_count, SUM(total_price) AS total_sales " +
                 "FROM orders " +
                 "WHERE customer_id = ? AND order_time < ?";

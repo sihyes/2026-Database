@@ -14,4 +14,13 @@ public class RestaurantService {
     public ResultSet getMenuList(int restaurantId) throws SQLException {
         return restaurantDAO.getMenuList(restaurantId);
     }
+
+    public ResultSet getMenuPrice(int menuId) throws SQLException {
+        return restaurantDAO.getMenuPrice(menuId);
+    }
+
+    public ResultSet getMenuByIdAndRestaurant(int menuId, int restaurantId) throws SQLException {
+        return restaurantDAO.getMenuByIdAndRestaurant(menuId, restaurantId);
+    }
+
 }

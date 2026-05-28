@@ -76,4 +76,8 @@ public class OrderService {
     public ResultSet getOrderStatByPeriod(String startDate, String endDate) throws SQLException{
         return orderDAO.getOrderStatByPeriod(startDate, endDate);
     }
+
+    public ResultSet getOrderDetail(int customerId) throws SQLException {
+        return orderDAO.getOrderDetail(customerId);
+    }
 }

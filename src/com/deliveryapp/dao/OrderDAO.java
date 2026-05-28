@@ -85,4 +85,12 @@ public class OrderDAO {
 
         return rs;
     }
+
+    // 주문 상세 조회 (VIEW 사용)
+    public ResultSet getOrderDetail(int customerId) throws SQLException {
+        String sql = "SELECT * FROM order_detail_view WHERE customer_id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, customerId);
+        return pstmt.executeQuery();
+    }
 }
