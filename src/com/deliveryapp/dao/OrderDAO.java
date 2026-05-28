@@ -5,6 +5,8 @@ import com.deliveryapp.common.DBUtil;
 import java.sql.*;
 import java.sql.SQLException;
 
+import com.deliveryapp.model.Order;
+
 public class OrderDAO {
 
     private Connection conn = DBUtil.getConnection();
@@ -43,8 +45,44 @@ public class OrderDAO {
         pstmt.executeUpdate();
     }
 
-    // 기간별 주문 통계
-    public ResultSet getOrderStatByPeriod(String startDate, String endDate) throws SQLException{
+    // 배달 상태 변경
+    public void updateDeliveryStatus(int orderId, String status) throws SQLException{
+        String sql = "UPDATE orders SET delivery_status = ? WHERE order_id = ?";
 
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, status);
+        pstmt.setInt(2, orderId);
+        pstmt.executeUpdate();
+    }
+
+    // 주문 취소
+    public void deleteOrder(int orderId) throws SQLException{
+        String sql = "DELETE FROM orders WHERE order_id = ?";
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, orderId);
+        pstmt.executeUpdate();
+    }
+
+    // 주문 상품 취소
+    public void deleteOrderItem(int orderId) throws SQLException{
+        String sql = "DELETE FROM order_item WHERE order_id = ?";
+
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, orderId);
+        pstmt.executeUpdate();
+    }
+
+    // 기간별 주문 통계 (REQ7)
+    public ResultSet getOrderStatByPeriod(String startDate, String endDate) throws SQLException{
+        String sql = "SELECT DATE(order_time) AS order_date, COUNT(*) AS order_count, SUM(total_price) AS total_sales " +
+                "FROM orders WHERE order_time BETWEEN ? AND ? " +
+                "GROUP BY DATE(order_time) ORDER BY order_date";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, startDate);
+        pstmt.setString(2, endDate);
+        ResultSet rs = pstmt.executeQuery();
+
+        return rs;
     }
 }

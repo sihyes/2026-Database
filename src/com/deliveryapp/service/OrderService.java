@@ -5,12 +5,13 @@ import com.deliveryapp.dao.OrderDAO;
 import com.deliveryapp.model.Order;
 
 import java.sql.*;
+import java.util.List;
 
 public class OrderService {
     private OrderDAO orderDAO = new OrderDAO();
     private Connection conn = DBUtil.getConnection();
 
-    public int insertOrder(Order order, List<int> orderItems){
+    public int insertOrder(Order order, List<int[]> orderItems){
         try{
             conn.setAutoCommit(false);
 
@@ -34,9 +35,45 @@ public class OrderService {
             System.out.println("주문 실패!" + e.getMessage());
             return -1;
         } finally {
-            try { conn.rollback(); } catch (SQLException ex) {
+            try { conn.setAutoCommit(true); } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    // 배달 상태 변경
+    public void updateDeliveryStatus(int orderId, String status) {
+        try{
+            conn.setAutoCommit(false);
+            orderDAO.updateDeliveryStatus(orderId, status);
+            conn.commit();
+            System.out.println("배달 상태 변경 완료");
+        } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            System.out.println("변경 실패: "+e.getMessage());
+        } finally {
+            try {conn.setAutoCommit(true);} catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    // 주문 취소
+    public void deleteOrder(int orderId) {
+        try{
+            conn.setAutoCommit(false);
+            // item 먼저 삭제 후 삭제
+            orderDAO.deleteOrderItem(orderId);
+            orderDAO.deleteOrder(orderId);
+            conn.commit();
+            System.out.println("주문 취소 완료");
+        } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            System.out.println("취소 실패: "+e.getMessage());
+        } finally {
+            try {conn.setAutoCommit(true);} catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    public ResultSet getOrderStatByPeriod(String startDate, String endDate) throws SQLException{
+        return orderDAO.getOrderStatByPeriod(startDate, endDate);
     }
 }

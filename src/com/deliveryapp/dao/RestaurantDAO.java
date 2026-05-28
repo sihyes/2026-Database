@@ -10,7 +10,7 @@ public class RestaurantDAO {
 
     // 식당 목록 조회
     public ResultSet getRestaurantList() throws SQLException {
-        String sql = "SELECT restaurant_id, restaurant_name, category FROM restaurants";
+        String sql = "SELECT restaurant_id, restaurant_name, category FROM restaurant";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         return pstmt.executeQuery();
     }
