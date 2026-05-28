@@ -1,3 +1,5 @@
+
+/* review view */
 CREATE VIEW review_detail AS
 SELECT
     r.review_id,
