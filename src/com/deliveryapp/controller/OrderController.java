@@ -1,0 +1,251 @@
+package com.deliveryapp.controller;
+
+import com.deliveryapp.model.Order;
+import com.deliveryapp.service.CouponService;
+import com.deliveryapp.service.OrderService;
+import com.deliveryapp.service.RestaurantService;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class OrderController {
+
+    private Scanner sc;
+    private OrderService orderService = new OrderService();
+    private RestaurantService restaurantService = new RestaurantService();
+    private CouponService couponService = new CouponService();
+
+    public OrderController(Scanner sc) {
+        this.sc = sc;
+    }
+
+    public void showMenu() {
+        while (true) {
+            System.out.println("\n===== 주문 관련 메뉴 =====");
+            System.out.println("1. 주문하기");
+            System.out.println("2. 주문 상세 조회");
+            System.out.println("3. 기간별 주문 통계");
+            System.out.println("4. 배달 상태 변경");
+            System.out.println("5. 주문 취소");
+            System.out.println("0. 이전 메뉴");
+            System.out.print("선택: ");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+                case 1 -> insertOrder();
+                case 2 -> selectOrderDetail();
+                case 3 -> selectOrderStat();
+                case 4 -> updateDeliveryStatus();
+                case 5 -> deleteOrder();
+                case 0 -> { return; }
+                default -> System.out.println("없는 메뉴예요.");
+            }
+        }
+    }
+
+    // CREATE - 주문 등록
+    private void insertOrder() {
+        try {
+            // 1. 고객 ID 입력
+            System.out.print("\n고객 ID 입력: ");
+            int customerId = sc.nextInt();
+            sc.nextLine();
+
+            // 2. 식당 목록 출력
+            System.out.println("\n===== 식당 목록 =====");
+            ResultSet restaurantRs = restaurantService.getRestaurantList();
+            while (restaurantRs.next()) {
+                System.out.printf("[%d] %s (%s)%n",
+                        restaurantRs.getInt("restaurant_id"),
+                        restaurantRs.getString("restaurant_name"),
+                        restaurantRs.getString("category"));
+            }
+            System.out.print("식당 ID 선택: ");
+            int restaurantId = sc.nextInt();
+            sc.nextLine();
+
+            // 3. 메뉴 목록 출력
+            System.out.println("\n===== 메뉴 목록 =====");
+            ResultSet menuRs = restaurantService.getMenuList(restaurantId);
+            while (menuRs.next()) {
+                System.out.printf("[%d] %s - %,.0f원%n",
+                        menuRs.getInt("menu_id"),
+                        menuRs.getString("menu_name"),
+                        menuRs.getDouble("current_price"));
+            }
+
+            // 4. 메뉴 선택 + 수량 입력
+            List<int[]> orderItems = new ArrayList<>();
+            double totalPrice = 0;
+
+            while (true) {
+                System.out.print("\n메뉴 ID 입력 (완료시 0): ");
+                int menuId = sc.nextInt();
+                sc.nextLine();
+                if (menuId == 0) break;
+
+                ResultSet validateRs = restaurantService.getMenuByIdAndRestaurant(menuId, restaurantId);
+                if (!validateRs.next()) {
+                    System.out.println("해당 식당의 메뉴가 아니에요. 다시 입력해주세요.");
+                    continue;
+                }
+
+                System.out.print("수량 입력: ");
+                int quantity = sc.nextInt();
+                sc.nextLine();
+
+                ResultSet priceRs = restaurantService.getMenuPrice(menuId);
+                if (priceRs.next()) {
+                    double unitPrice = priceRs.getDouble("current_price");
+                    orderItems.add(new int[]{menuId, quantity, (int) unitPrice});
+                    totalPrice += unitPrice * quantity;
+                    System.out.printf("추가됨: %,.0f원 x %d개%n", unitPrice, quantity);
+                }
+            }
+
+            // 5. 쿠폰 입력
+            System.out.print("\n쿠폰 코드 입력 (없으면 엔터): ");
+            String couponCode = sc.nextLine().trim();
+
+            int couponId = 0;
+            double discountAmount = 0;
+
+            if (!couponCode.isEmpty()) {
+                ResultSet couponRs = couponService.getCoupon(couponCode);
+                if (couponRs.next()) {
+                    double minOrder = couponRs.getDouble("min_order_amount");
+                    if (totalPrice >= minOrder) {
+                        couponId = couponRs.getInt("coupon_id");
+                        String discountType = couponRs.getString("discount_type");
+                        double discountValue = couponRs.getDouble("discount_value");
+                        discountAmount = discountType.equals("fixed")
+                                ? discountValue
+                                : totalPrice * discountValue / 100;
+                        System.out.printf("쿠폰 적용! 할인: %,.0f원%n", discountAmount);
+                    } else {
+                        System.out.printf("최소 주문금액 %,.0f원 미달%n", minOrder);
+                    }
+                } else {
+                    System.out.println("유효하지 않은 쿠폰이에요.");
+                }
+            }
+
+            // 6. 최종 금액 확인
+            double finalPrice = totalPrice - discountAmount;
+            System.out.printf("%n총 금액: %,.0f원 / 할인: %,.0f원 / 최종: %,.0f원%n",
+                    totalPrice, discountAmount, finalPrice);
+            System.out.print("주문하시겠습니까? (y/n): ");
+            String confirm = sc.nextLine();
+
+            if (!confirm.equalsIgnoreCase("y")) {
+                System.out.println("주문이 취소됐어요.");
+                return;
+            }
+
+            // 7. 주문 등록
+            Order order = new Order(customerId, restaurantId, finalPrice,
+                    "pending", null, null,
+                    couponId == 0 ? null : couponId, discountAmount);
+            orderService.insertOrder(order, orderItems);
+
+        } catch (SQLException e) {
+            System.out.println("오류 발생: " + e.getMessage());
+        }
+    }
+
+    // SELECT - 주문 상세 조회 (VIEW 사용)
+    private void selectOrderDetail() {
+        try {
+            System.out.print("\n고객 ID 입력: ");
+            int customerId = sc.nextInt();
+            sc.nextLine();
+
+            ResultSet rs = orderService.getOrderDetail(customerId);
+
+            System.out.println("\n주문ID | 주문시각             | 상태      | 메뉴명 | 수량 | 단가    | 소계");
+            System.out.println("-------------------------------------------------------------------------");
+            while (rs.next()) {
+                System.out.printf("%-6d | %-20s | %-9s | %-10s | %3d | %,7.0f | %,7.0f%n",
+                        rs.getInt("order_id"),
+                        rs.getString("order_time"),
+                        rs.getString("delivery_status"),
+                        rs.getString("menu_name"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("ordered_unit_price"),
+                        rs.getDouble("item_total"));
+            }
+        } catch (SQLException e) {
+            System.out.println("오류 발생: " + e.getMessage());
+        }
+    }
+
+    // SELECT - 기간별 주문 통계
+    private void selectOrderStat() {
+        try {
+            System.out.print("\n시작 날짜 입력 (예: 2025-01-01): ");
+            String startDate = sc.nextLine();
+            System.out.print("종료 날짜 입력 (예: 2025-12-31): ");
+            String endDate = sc.nextLine();
+
+            ResultSet rs = orderService.getOrderStatByPeriod(startDate, endDate);
+
+            System.out.println("\n날짜           | 주문수 | 금액");
+            System.out.println("----------------------------------");
+            while (rs.next()) {
+                System.out.printf("%-14s | %4d  | %,.0f원%n",
+                        rs.getString("order_date"),
+                        rs.getInt("order_count"),
+                        rs.getDouble("total_sales"));
+            }
+        } catch (SQLException e) {
+            System.out.println("오류 발생: " + e.getMessage());
+        }
+    }
+
+    // UPDATE - 배달 상태 변경
+    private void updateDeliveryStatus() {
+        System.out.print("\n주문 ID 입력: ");
+        int orderId = sc.nextInt();
+        sc.nextLine();
+
+        System.out.println("변경할 상태 선택");
+        System.out.println("1. pending  2. delivering  3. delivered");
+        System.out.print("선택: ");
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+        String status = switch (choice) {
+            case 1 -> "pending";
+            case 2 -> "delivering";
+            case 3 -> "delivered";
+            default -> null;
+        };
+
+        if (status == null) {
+            System.out.println("잘못된 선택이에요.");
+            return;
+        }
+        orderService.updateDeliveryStatus(orderId, status);
+    }
+
+    // DELETE - 주문 취소
+    private void deleteOrder() {
+        System.out.print("\n취소할 주문 ID 입력: ");
+        int orderId = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("정말 취소하시겠습니까? (y/n): ");
+        String confirm = sc.nextLine();
+
+        if (confirm.equalsIgnoreCase("y")) {
+            orderService.deleteOrder(orderId);
+        } else {
+            System.out.println("취소를 중단했어요.");
+        }
+    }
+}

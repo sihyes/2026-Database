@@ -1,7 +1,7 @@
 package com.deliveryapp;
 
 import com.deliveryapp.common.DBUtil;
-import com.deliveryapp.controller.MenuController;
+import com.deliveryapp.controller.AppMenuController;
 
 public class Main {
     public static void main(String[] args) {
@@ -9,7 +9,7 @@ public class Main {
         DBUtil.getConnection();
 
         // 메뉴 시작
-        MenuController controller = new MenuController();
+        AppMenuController controller = new AppMenuController();
         controller.start();
 
         // 종료 시 연결 닫기
