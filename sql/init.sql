@@ -273,7 +273,9 @@ INSERT INTO orders (customer_id, restaurant_id, total_price, order_time, deliver
                                                                                                                                                        (2,  4,  24000, '2025-03-15 12:45:00', 'delivered', 3, 2,  9,  2500),
                                                                                                                                                        (3,  5,  41000, '2025-03-20 18:30:00', 'delivered', 2, 3,  10, 1500),
                                                                                                                                                        (4,  1,  16000, '2025-04-01 13:00:00', 'delivered', 1, 4,  NULL, 0),
-                                                                                                                                                       (5,  2,  29000, '2025-04-05 20:00:00', 'delivered', 2, 5,  11, 3480);
+                                                                                                                                                       (5,  2,  29000, '2025-04-05 20:00:00', 'delivered', 2, 5,  11, 3480),
+                                                                                                                                                       (4,  1,  16000, '2025-04-07 17:00:00', 'delivered', 1, 4,  NULL, 0);
+
 
 
 /* 11. order_items */
