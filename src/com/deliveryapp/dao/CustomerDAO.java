@@ -20,6 +20,7 @@ public class CustomerDAO {
     public ResultSet getCustomerHistory(int customerId) throws SQLException {
         String sql = "SELECT ch.history_id, ch.changed_at, " +
                 "r1.region_name AS old_region, r2.region_name AS new_region, " +
+                "ch.old_region_id, ch.new_region_id, " +
                 "ch.old_grade, ch.new_grade " +
                 "FROM customer_history ch " +
                 "LEFT JOIN region r1 ON ch.old_region_id = r1.region_id " +

@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CustomerController {
 
@@ -130,7 +132,6 @@ public class CustomerController {
             int customerId = sc.nextInt();
             sc.nextLine();
 
-            // 변경 이력 조회
             ResultSet historyRs = customerService.getCustomerHistory(customerId);
 
             if (!historyRs.next()) {
@@ -138,34 +139,74 @@ public class CustomerController {
                 return;
             }
 
-            System.out.println("\n===== 고객 변경 이력 =====");
-            System.out.println("변경일              | 변경 전 지역 | 변경 후 지역 | 변경 전 등급 | 변경 후 등급");
-            System.out.println("------------------------------------------------------------------------");
-
-            Timestamp changedAt = null;
+            // 이력 목록 저장
+            List<Object[]> historyList = new ArrayList<>();
             do {
-                changedAt = historyRs.getTimestamp("changed_at");
-                System.out.printf("%-20s | %-10s | %-10s | %-10s | %-10s%n",
-                        changedAt,
+                // 변경 유형 판단
+                String changeType = "";
+                boolean regionChanged = historyRs.getInt("old_region_id") != historyRs.getInt("new_region_id");
+                boolean gradeChanged = !historyRs.getString("old_grade").equals(historyRs.getString("new_grade"));
+
+                if (regionChanged && gradeChanged) changeType = "지역+등급 변경";
+                else if (regionChanged) changeType = "지역 변경";
+                else if (gradeChanged) changeType = "등급 변경";
+                else changeType = "기타";
+
+                historyList.add(new Object[]{
+                        historyRs.getInt("history_id"),
+                        historyRs.getTimestamp("changed_at"),
+                        changeType,
                         historyRs.getString("old_region"),
                         historyRs.getString("new_region"),
                         historyRs.getString("old_grade"),
-                        historyRs.getString("new_grade"));
+                        historyRs.getString("new_grade")
+                });
             } while (historyRs.next());
 
-            // 가장 최근 변경일 기준으로 매출 비교
-            System.out.println("\n===== 변경 전후 매출 비교 =====");
+            // 이력 출력
+            System.out.println("\n===== 고객 변경 이력 =====");
+            System.out.println("번호 | 변경일              | 변경 유형     | 변경 전            | 변경 후");
+            System.out.println("------------------------------------------------------------------------");
+            for (int i = 0; i < historyList.size(); i++) {
+                Object[] h = historyList.get(i);
+                String before = h[2].toString().contains("지역") ? (String) h[3] : "" +
+                        (h[2].toString().contains("등급") ? " / " + h[5] : "");
+                String after  = h[2].toString().contains("지역") ? (String) h[4] : "" +
+                        (h[2].toString().contains("등급") ? " / " + h[6] : "");
+                System.out.printf("%3d  | %-20s | %-12s | %-18s | %-10s%n",
+                        i + 1,
+                        h[1],
+                        h[2],
+                        h[3] + " / " + h[5],
+                        h[4] + " / " + h[6]);
+            }
+
+            // 분석할 이력 선택
+            System.out.print("\n분석할 변경 이력 번호 선택: ");
+            int selected = sc.nextInt();
+            sc.nextLine();
+
+            if (selected < 1 || selected > historyList.size()) {
+                System.out.println("잘못된 번호예요.");
+                return;
+            }
+
+            Timestamp changedAt = (Timestamp) historyList.get(selected - 1)[1];
+            String changeType = (String) historyList.get(selected - 1)[2];
+
+            // 변경 전후 구매 분석
+            System.out.println("\n===== " + changeType + " 전후 구매 분석 =====");
 
             ResultSet beforeRs = customerService.getOrderStatBeforeChange(customerId, changedAt);
             if (beforeRs.next()) {
-                System.out.printf("변경 전 → 주문 수: %d건 / 총 매출: %,.0f원%n",
+                System.out.printf("변경 전 → 주문 수: %d건 / 총 구매액: %,.0f원%n",
                         beforeRs.getInt("order_count"),
                         beforeRs.getDouble("total_sales"));
             }
 
             ResultSet afterRs = customerService.getOrderStatAfterChange(customerId, changedAt);
             if (afterRs.next()) {
-                System.out.printf("변경 후 → 주문 수: %d건 / 총 매출: %,.0f원%n",
+                System.out.printf("변경 후 → 주문 수: %d건 / 총 구매액: %,.0f원%n",
                         afterRs.getInt("order_count"),
                         afterRs.getDouble("total_sales"));
             }
