@@ -15,10 +15,10 @@ public class AppMenuController {
     public void start() {
         while (true) {
             System.out.println("\n===== 배달 서비스 =====");
-            System.out.println("1. 주문 메뉴");
-            System.out.println("2. 고객 통계 분석 메뉴");
-            System.out.println("3. 리뷰 메뉴");
-            System.out.println("4. 메뉴/가격 관련");
+            System.out.println("1. 주문 관리");
+            System.out.println("2. 고객 관리");
+            System.out.println("3. 리뷰 관리");
+            System.out.println("4. 식당/메뉴 관리");
             System.out.println("0. 종료");
             System.out.println("======================");
 

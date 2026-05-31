@@ -62,4 +62,14 @@ public class CustomerService {
         }
     }
 
+    // 지역별 매출 분석
+    public ResultSet getOrderStatByRegion() throws SQLException {
+        return customerDAO.getOrderStatByRegion();
+    }
+
+    // 등급별 매출 분석
+    public ResultSet getOrderStatByGrade() throws SQLException {
+        return customerDAO.getOrderStatByGrade();
+    }
+
 }

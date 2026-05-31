@@ -22,7 +22,9 @@ public class CustomerController {
             System.out.println("1. 고객 정보 조회");
             System.out.println("2. 고객 지역 변경");
             System.out.println("3. 고객 등급 변경");
-            System.out.println("4. 인구통계 변화 전후 매출 비교 (REQ14)");
+            System.out.println("4. 고객 정보 변화 전후 구매 분석");
+            System.out.println("5. 지역별 고객 구매 현황");
+            System.out.println("6. 등급별 고객 구매 현황");
             System.out.println("0. 이전 메뉴");
             System.out.print("선택: ");
 
@@ -34,6 +36,8 @@ public class CustomerController {
                 case 2 -> updateCustomerRegion();
                 case 3 -> updateCustomerGrade();
                 case 4 -> selectOrderStatByDemographic();
+                case 5 -> selectOrderStatByGrade();
+                case 6 -> selectOrderStatByRegion();
                 case 0 -> { return; }
                 default -> System.out.println("없는 메뉴예요.");
             }
@@ -119,7 +123,7 @@ public class CustomerController {
         }
     }
 
-    // REQ14 - 인구통계 변화 전후 매출 비교
+    // 고객 정보 변화 전후 매출 비교
     private void selectOrderStatByDemographic() {
         try {
             System.out.print("\n고객 ID 입력: ");
@@ -166,6 +170,43 @@ public class CustomerController {
                         afterRs.getDouble("total_sales"));
             }
 
+        } catch (SQLException e) {
+            System.out.println("오류 발생: " + e.getMessage());
+        }
+    }
+
+    // 지역별 고객 구매 현황
+    private void selectOrderStatByRegion() {
+        try {
+            ResultSet rs = customerService.getOrderStatByRegion();
+            System.out.println("\n지역명     | 도시 | 주문수 | 총구매액       | 평균구매액");
+            System.out.println("--------------------------------------------------------");
+            while (rs.next()) {
+                System.out.printf("%-10s | %-4s | %4d  | %,12.0f원 | %,8.0f원%n",
+                        rs.getString("region_name"),
+                        rs.getString("city"),
+                        rs.getInt("order_count"),
+                        rs.getDouble("total_sales"),
+                        rs.getDouble("avg_sales"));
+            }
+        } catch (SQLException e) {
+            System.out.println("오류 발생: " + e.getMessage());
+        }
+    }
+
+    // 등급별 고객 구매 현황
+    private void selectOrderStatByGrade() {
+        try {
+            ResultSet rs = customerService.getOrderStatByGrade();
+            System.out.println("\n등급     | 주문수 | 총구매액       | 평균구매액");
+            System.out.println("------------------------------------------------");
+            while (rs.next()) {
+                System.out.printf("%-8s | %4d  | %,12.0f원 | %,8.0f원%n",
+                        rs.getString("current_grade"),
+                        rs.getInt("order_count"),
+                        rs.getDouble("total_sales"),
+                        rs.getDouble("avg_sales"));
+            }
         } catch (SQLException e) {
             System.out.println("오류 발생: " + e.getMessage());
         }

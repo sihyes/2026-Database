@@ -85,4 +85,33 @@ public class CustomerDAO {
         pstmt.executeUpdate();
     }
 
+    // 지역별 매출 분석
+    public ResultSet getOrderStatByRegion() throws SQLException {
+        String sql = "SELECT r.region_name, r.city, " +
+                "COUNT(o.order_id) AS order_count, " +
+                "SUM(o.total_price) AS total_sales, " +
+                "AVG(o.total_price) AS avg_sales " +
+                "FROM orders o " +
+                "JOIN customer c ON o.customer_id = c.customer_id " +
+                "JOIN region r ON c.region_id = r.region_id " +
+                "GROUP BY r.region_id, r.region_name, r.city " +
+                "ORDER BY total_sales DESC";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        return pstmt.executeQuery();
+    }
+
+    // 등급별 매출 분석
+    public ResultSet getOrderStatByGrade() throws SQLException {
+        String sql = "SELECT c.current_grade, " +
+                "COUNT(o.order_id) AS order_count, " +
+                "SUM(o.total_price) AS total_sales, " +
+                "AVG(o.total_price) AS avg_sales " +
+                "FROM orders o " +
+                "JOIN customer c ON o.customer_id = c.customer_id " +
+                "GROUP BY c.current_grade " +
+                "ORDER BY total_sales DESC";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        return pstmt.executeQuery();
+    }
+
 }
