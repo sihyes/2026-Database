@@ -53,4 +53,36 @@ public class CustomerDAO {
         return pstmt.executeQuery();
     }
 
+    // 고객 지역 변경
+    public void updateCustomerRegion(int customerId, int newRegionId) throws SQLException {
+        String sql = "UPDATE customer SET region_id = ?, updated_at = NOW() WHERE customer_id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, newRegionId);
+        pstmt.setInt(2, customerId);
+        pstmt.executeUpdate();
+    }
+
+    // 고객 등급 변경
+    public void updateCustomerGrade(int customerId, String newGrade) throws SQLException {
+        String sql = "UPDATE customer SET current_grade = ?, updated_at = NOW() WHERE customer_id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, newGrade);
+        pstmt.setInt(2, customerId);
+        pstmt.executeUpdate();
+    }
+
+    // 이력 저장
+    public void insertCustomerHistory(int customerId, Integer oldRegionId, Integer newRegionId,
+                                      String oldGrade, String newGrade) throws SQLException {
+        String sql = "INSERT INTO customer_history (customer_id, old_region_id, new_region_id, old_grade, new_grade) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, customerId);
+        pstmt.setObject(2, oldRegionId);
+        pstmt.setObject(3, newRegionId);
+        pstmt.setString(4, oldGrade);
+        pstmt.setString(5, newGrade);
+        pstmt.executeUpdate();
+    }
+
 }
