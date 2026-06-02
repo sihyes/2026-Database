@@ -1,14 +1,14 @@
 package com.deliveryapp.service;
 
+import com.deliveryapp.common.DBUtil;
 import com.deliveryapp.dao.CustomerDAO;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 
 public class CustomerService {
 
     private CustomerDAO customerDAO = new CustomerDAO();
+    private Connection conn = DBUtil.getConnection();
 
     // 고객 조회
     public ResultSet getCustomer(int customerId) throws SQLException {
@@ -29,4 +29,47 @@ public class CustomerService {
     public ResultSet getOrderStatAfterChange(int customerId, Timestamp changedAt) throws SQLException {
         return customerDAO.getOrderStatAfterChange(customerId, changedAt);
     }
+
+    // 지역 변경 + 이력 저장
+    public void updateCustomerRegion(int customerId, int oldRegionId, int newRegionId, String currentGrade) {
+        try {
+            conn.setAutoCommit(false);
+            customerDAO.updateCustomerRegion(customerId, newRegionId);
+            customerDAO.insertCustomerHistory(customerId, oldRegionId, newRegionId, currentGrade, currentGrade);
+            conn.commit();
+            System.out.println("지역 변경 완료!");
+        } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            System.out.println("변경 실패: " + e.getMessage());
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    // 등급 변경 + 이력 저장
+    public void updateCustomerGrade(int customerId, String oldGrade, String newGrade, Integer currentRegionId) {
+        try {
+            conn.setAutoCommit(false);
+            customerDAO.updateCustomerGrade(customerId, newGrade);
+            customerDAO.insertCustomerHistory(customerId, currentRegionId, currentRegionId, oldGrade, newGrade);
+            conn.commit();
+            System.out.println("등급 변경 완료!");
+        } catch (SQLException e) {
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            System.out.println("변경 실패: " + e.getMessage());
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
+    // 지역별 매출 분석
+    public ResultSet getOrderStatByRegion() throws SQLException {
+        return customerDAO.getOrderStatByRegion();
+    }
+
+    // 등급별 매출 분석
+    public ResultSet getOrderStatByGrade() throws SQLException {
+        return customerDAO.getOrderStatByGrade();
+    }
+
 }
