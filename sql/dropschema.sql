@@ -1,0 +1,15 @@
+DROP TABLE IF EXISTS review;
+DROP TABLE IF EXISTS order_item;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS coupon;
+DROP TABLE IF EXISTS delivery_address;
+DROP TABLE IF EXISTS delivery_fee;
+DROP TABLE IF EXISTS menu_price_history;
+DROP TABLE IF EXISTS menu;
+DROP TABLE IF EXISTS restaurant;
+DROP TABLE IF EXISTS customer_history;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS region;
+
+DROP VIEW IF EXISTS order_detail_view;
+DROP VIEW IF EXISTS review_detail;
