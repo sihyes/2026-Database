@@ -114,7 +114,7 @@ CREATE TABLE orders (
                         delivery_fee_id INT,
                         address_id      INT,
                         coupon_id       INT,
-                        discount_amount DECIMAL(10,2) DEFAULT 0,
+                        discount_amount NUMERIC(10,2) DEFAULT 0,
 
                         FOREIGN KEY (customer_id)     REFERENCES customer(customer_id),
                         FOREIGN KEY (restaurant_id)   REFERENCES restaurant(restaurant_id),
@@ -129,7 +129,7 @@ CREATE TABLE order_item (
                             order_id           INT           NOT NULL,
                             menu_id            INT           NOT NULL,
                             quantity           INT           NOT NULL CHECK (quantity > 0),
-                            ordered_unit_price DECIMAL(10,2) NOT NULL,
+                            ordered_unit_price NUMERIC(10,2) NOT NULL,
 
                             FOREIGN KEY (order_id) REFERENCES orders(order_id),
                             FOREIGN KEY (menu_id)  REFERENCES menu(menu_id)
