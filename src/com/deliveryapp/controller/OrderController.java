@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * 주문 관련 메뉴 처리 컨트롤러
+ * REQ05 (INSERT), REQ06 (SELECT + JOIN + VIEW),
+ * REQ07 (SELECT + GROUP BY), REQ08 (UPDATE + 트랜잭션), REQ09 (DELETE)
+ */
+
 public class OrderController {
 
     private Scanner sc;
@@ -22,6 +28,7 @@ public class OrderController {
         this.sc = sc;
     }
 
+    // 주문 관련 메뉴 출력 후 사용자 입력에 따라 기능 실행
     public void showMenu() {
         while (true) {
             System.out.println("\n===== 주문 관련 메뉴 =====");
@@ -48,7 +55,11 @@ public class OrderController {
         }
     }
 
-    // CREATE - 주문 등록
+    /**
+     * [REQ5] 주문 등록
+     * 고객 ID, 식당, 메뉴, 수량, 쿠폰을 입력받아 orders + order_item 테이블에 INSERT
+     * orders와 order_item INSERT는 트랜잭션으로 처리 (OrderService)
+     */
     private void insertOrder() {
         try {
             // 1. 고객 ID 입력
@@ -89,6 +100,7 @@ public class OrderController {
                 sc.nextLine();
                 if (menuId == 0) break;
 
+                // 해당 식당의 메뉴인지 검증
                 ResultSet validateRs = restaurantService.getMenuByIdAndRestaurant(menuId, restaurantId);
                 if (!validateRs.next()) {
                     System.out.println("해당 식당의 메뉴가 아니에요. 다시 입력해주세요.");
@@ -147,7 +159,7 @@ public class OrderController {
                 return;
             }
 
-            // 7. 주문 등록
+            // 7. 주문 등록 (INSERT)
             Order order = new Order(customerId, restaurantId, finalPrice,
                     "pending", null, null,
                     couponId == 0 ? null : couponId, discountAmount);
@@ -158,7 +170,11 @@ public class OrderController {
         }
     }
 
-    // SELECT - 주문 상세 조회 (VIEW 사용)
+    /**
+     * [REQ6] 주문 상세 조회
+     * order_detail_view(VIEW)와 customer 테이블을 JOIN하여 조회
+     * 고객 ID를 사용자 입력으로 받아 해당 고객의 주문 내역을 출력
+     */
     private void selectOrderDetail() {
         try {
             System.out.print("\n고객 ID 입력: ");
@@ -186,7 +202,10 @@ public class OrderController {
         }
     }
 
-    // SELECT - 기간별 주문 통계
+    /**
+     * [REQ7] 기간별 주문 통계
+     * 시작일 ~ 종료일 입력받아 날짜별 주문 수, 총 금액을 GROUP BY로 집계
+     */
     private void selectOrderStat() {
         try {
             System.out.print("\n시작 날짜 입력 (예: 2025-01-01): ");
@@ -209,7 +228,11 @@ public class OrderController {
         }
     }
 
-    // UPDATE - 배달 상태 변경
+    /**
+     * [REQ8] 배달 상태 변경
+     * 주문 ID와 변경할 상태를 입력받아 orders 테이블의 delivery_status UPDATE
+     * 트랜잭션 처리는 OrderService에서 담당
+     */
     private void updateDeliveryStatus() {
         System.out.print("\n주문 ID 입력: ");
         int orderId = sc.nextInt();
@@ -235,7 +258,12 @@ public class OrderController {
         orderService.updateDeliveryStatus(orderId, status);
     }
 
-    // DELETE - 주문 취소
+    /**
+     * [REQ9] 주문 취소
+     * 주문 ID를 입력받아 order_item 먼저 삭제 후 orders 삭제
+     * FK 제약조건으로 인해 order_item을 먼저 삭제해야 함
+     * 트랜잭션 처리는 OrderService에서 담당
+     */
     private void deleteOrder() {
         System.out.print("\n취소할 주문 ID 입력: ");
         int orderId = sc.nextInt();

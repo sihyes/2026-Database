@@ -7,6 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+/**
+ * 리뷰 관련 메뉴를 처리하는 컨트롤러
+ * REQ5 (INSERT), REQ6 (SELECT + JOIN + VIEW), REQ7 (SELECT + GROUP BY),
+ * REQ9 (DELETE) 담당
+ */
 public class ReviewController {
     private Scanner sc;
     private ReviewService reviewService = new ReviewService();
@@ -15,6 +20,7 @@ public class ReviewController {
         this.sc = sc;
     }
 
+    // 리뷰 관련 메뉴를 출력하고 사용자 입력에 따라 기능을 실행
     public void showMenu() {
         while (true) {
             System.out.println("\n===== 리뷰 메뉴 =====");
@@ -41,12 +47,18 @@ public class ReviewController {
         }
     }
 
+    /**
+     * [REQ5] 리뷰 등록
+     * 주문 ID를 입력받아 배달 완료 여부 및 중복 리뷰 여부를 검증한 후
+     * 평점(0~5)과 코멘트를 입력받아 review 테이블에 INSERT
+     */
     private void insertReview() {
         try {
             System.out.print("\n주문 ID 입력: ");
             int orderId = sc.nextInt();
             sc.nextLine();
 
+            // 배달 완료 주문인지, 이미 리뷰가 존재하는지 검증
             if (!reviewService.canCreateReview(orderId)) {
                 System.out.println("리뷰 작성 불가: 배달 완료 주문이 아니거나 이미 리뷰가 존재합니다.");
                 return;
@@ -56,6 +68,7 @@ public class ReviewController {
             double rating = sc.nextDouble();
             sc.nextLine();
 
+            // 평점 범위 검증
             if (!reviewService.isRatingValid(rating)) {
                 System.out.println("평점은 0~5 범위여야 합니다.");
                 return;
@@ -71,6 +84,11 @@ public class ReviewController {
         }
     }
 
+    /**
+     * [REQ6] 고객별 리뷰 조회
+     * 고객 ID를 입력받아 review_detail VIEW와 customer 테이블을 JOIN하여
+     * 해당 고객의 리뷰 목록을 출력한다.
+     */
     private void selectReviewByCustomer() {
         try {
             System.out.print("\n고객 ID 입력: ");
@@ -84,6 +102,11 @@ public class ReviewController {
         }
     }
 
+    /**
+     * [REQ6] 식당별 리뷰 조회
+     * 식당 ID를 입력받아 review_detail VIEW와 restaurant 테이블을 JOIN하여
+     * 해당 식당의 리뷰 목록을 출력한다.
+     */
     private void selectReviewByRestaurant() {
         try {
             System.out.print("\n식당 ID 입력: ");
@@ -97,6 +120,10 @@ public class ReviewController {
         }
     }
 
+    /**
+     * [REQ7] 식당별 평점 집계 review + restaurant 테이블을 JOIN하여
+     * 식당별 평균 평점과 리뷰 수를 GROUP BY로 집계하여 출력한다.
+     */
     private void selectRestaurantRatingStat() {
         try {
             ResultSet rs = reviewService.getRestaurantRatingStat();
@@ -115,6 +142,10 @@ public class ReviewController {
         }
     }
 
+    /**
+     * [REQ9] 리뷰 삭제
+     * 리뷰 ID를 입력받아 확인 후 review 테이블에서 DELETE
+     */
     private void deleteReview() {
         System.out.print("\n삭제할 리뷰 ID 입력: ");
         int reviewId = sc.nextInt();
@@ -130,6 +161,7 @@ public class ReviewController {
         }
     }
 
+    // 리뷰 상세 정보를 표 형식으로 출력하는 공통 메서드
     private void printReviewDetail(ResultSet rs) throws SQLException {
         System.out.println("\n리뷰ID | 주문ID | 평점 | 작성시각           | 고객명 | 식당명 | 코멘트");
         System.out.println("--------------------------------------------------------------------------");
