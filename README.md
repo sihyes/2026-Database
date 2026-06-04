@@ -147,7 +147,6 @@ java -cp "2026-Database.jar:lib/mysql-connector-j-8.0.33.jar" com.deliveryapp.Ma
 | Version Control | Git / GitHub |
 
 ---
+## ER Diagram
 
-여기에 ERD 그림 넣는거 어떻게 생각하시나요? ㄱㄱ
-
-![ERD](sql/erd.png)
+![ERD](sql/ERD.png)
