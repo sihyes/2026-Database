@@ -167,10 +167,12 @@ public class OrderController {
 
             ResultSet rs = orderService.getOrderDetail(customerId);
 
-            System.out.println("\n주문ID | 주문시각             | 상태      | 메뉴명 | 수량 | 단가    | 소계");
-            System.out.println("-------------------------------------------------------------------------");
+            System.out.println("\n고객명 | 등급   | 주문ID | 주문시각         | 상태      | 메뉴명     | 수량 | 단가    | 소계");
+            System.out.println("-------------------------------------------------------------------------------------");
             while (rs.next()) {
-                System.out.printf("%-6d | %-20s | %-9s | %-10s | %3d | %,7.0f | %,7.0f%n",
+                System.out.printf("%-6s | %-6s | %-5d | %-16s | %-9s | %-10s | %3d | %,6.0f | %,6.0f%n",
+                        rs.getString("customer_name"),
+                        rs.getString("current_grade"),
                         rs.getInt("order_id"),
                         rs.getString("order_time"),
                         rs.getString("delivery_status"),
