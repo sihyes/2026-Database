@@ -1,4 +1,4 @@
-                                  # 2026 Database Team Project
+# 2026 Database Team Project
 
 음식 배달 서비스 데이터베이스 애플리케이션
 
@@ -6,9 +6,9 @@
 
 ## 팀원 및 역할
 
-| 이름 | 담당 테이블 | 담당 역할 |
+| 이름 | 담당 테이블 & 뷰 | 담당 역할 |
 | --- | --- | --- |
-| 이시은 (팀장) | review | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현 |
+| 이시은 (팀장) | review,  order_detail_view  | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현, 검토 |
 | 박고은 | orders, order_item, coupon | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현 |
 | 장채린 | customer, customer_history, delivery_address, region | 레포트 작성 및 자료 제작 |
 | 박시연 | restaurant, menu, menu_price_history, delivery_fee | 레포트 작성 및 자료 제작, 발표 |
@@ -17,22 +17,22 @@
 
 ## 실행 전 설정
 
-### 1. DB 연결 정보 수정
-
-`src/com/deliveryapp/common/DBUtil.java` 파일을 열고 아래 값을 본인 환경에 맞게 수정하세요.
-
-```java
-private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
-private static final String USER = "root";
-private static final String PASSWORD = "your_password";
-```
-
-### 2. 데이터베이스 생성
+### 1. 데이터베이스 생성
 
 MySQL에서 아래 명령어를 실행하세요.
 
 ```sql
 CREATE DATABASE food_delivery;
+```
+
+### 2. DB 연결 정보 수정
+
+`src/com/deliveryapp/common/DBUtil.java` 파일을 열고 아래 username과 password를 본인 환경에 맞게 수정하세요.
+
+```java
+private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
+private static final String USER = "root"; //혹은 권한이 있는 사용자
+private static final String PASSWORD = "your_password";
 ```
 
 ### 3. 스키마 및 초기 데이터 삽입
@@ -49,7 +49,7 @@ CREATE DATABASE food_delivery;
 ## 애플리케이션 실행
 
 ```bash
-java -cp lib/mysql-connector-java-8.0.33.jar -jar 2026-Database.jar
+java -cp "2026-Database.jar:lib/mysql-connector-j-8.0.33.jar" com.deliveryapp.Main   (Windows는 : 대신 ;)
 ```
 
 - **메인 클래스:** `com.deliveryapp.Main`
@@ -145,3 +145,9 @@ java -cp lib/mysql-connector-java-8.0.33.jar -jar 2026-Database.jar
 | DB Driver | mysql-connector-java 8.0.33 |
 | IDE | IntelliJ IDEA |
 | Version Control | Git / GitHub |
+
+---
+
+여기에 ERD 그림 넣는거 어떻게 생각하시나요? ㄱㄱ
+
+!ERD.png
