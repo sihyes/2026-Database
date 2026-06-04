@@ -7,6 +7,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Scanner;
 
+/**
+ * 식당 메뉴 및 가격 관련 메뉴를 처리하는 컨트롤러
+ * REQ8 (메뉴 가격 변경 + 트랜잭션), REQ13 (가격 변경 전후 매출 분석) 담당
+ */
 public class FoodMenuController {
     private Scanner sc;
     private RestaurantService restaurantService = new RestaurantService();
@@ -15,6 +19,7 @@ public class FoodMenuController {
         this.sc = sc;
     }
 
+    // 메뉴/가격 관련 메뉴를 출력하고 사용자 입력에 따라 기능을 실행한다
     public void showMenu() {
         while (true) {
             System.out.println("\n===== 메뉴/가격 관련 =====");
@@ -35,6 +40,12 @@ public class FoodMenuController {
         }
     }
 
+    /**
+     * [REQ8] 메뉴 가격 변경
+     * 메뉴 ID를 입력받아 현재 가격을 조회하고 새 가격으로 UPDATE
+     * 변경 이력을 menu_price_history에 INSERT (트랜잭션 처리는 RestaurantService 담당)
+     * ordered_unit_price 스냅샷으로 과거 매출 데이터가 유지됨 (REQ13 대응)
+     */
     private void updateMenuPrice() {
         try {
             System.out.print("\n메뉴 ID 입력: ");
@@ -69,6 +80,11 @@ public class FoodMenuController {
         }
     }
 
+    /**
+     * [REQ13] 가격 변경 전후 매출 분석
+     * 메뉴 ID와 기준 변경 시각을 입력받아 order_item의 ordered_unit_price(주문 시점 가격 스냅샷)를 기준으로
+     * 가격 변경 전후 매출을 비교하여 출력한다.
+     */
     private void selectSalesBeforeAfter() {
         try {
             System.out.print("\n메뉴 ID 입력: ");

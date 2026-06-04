@@ -9,6 +9,11 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * 고객 관련 메뉴를 처리하는 컨트롤러
+ * 고객 정보 조회/수정 및 REQ14 (인구통계 기반 구매 분석) 담당
+ */
 public class CustomerController {
 
     private Scanner sc;
@@ -18,6 +23,7 @@ public class CustomerController {
         this.sc = sc;
     }
 
+    // 고객 관련 메뉴 출력 후 사용자 입력에 따라 기능 실행
     public void showMenu() {
         while (true) {
             System.out.println("\n===== 고객 통계 분석 메뉴 =====");
@@ -46,7 +52,7 @@ public class CustomerController {
         }
     }
 
-    // 고객 정보 조회
+    // 고객 ID를 통해 정보 조회
     private void selectCustomer() {
         try {
             System.out.print("\n고객 ID 입력: ");
@@ -68,7 +74,11 @@ public class CustomerController {
         }
     }
 
-    // 지역 변경
+    /**
+     * [REQ8] 고객 지역 변경
+     * 현재 지역 ID를 조회한 후 새 지역 ID로 UPDATE
+     * 변경 이력을 customer_history에 INSERT (트랜잭션 처리는 CustomerService 담당)
+     */
     private void updateCustomerRegion() {
         try {
             System.out.print("\n고객 ID 입력: ");
@@ -97,7 +107,11 @@ public class CustomerController {
         }
     }
 
-    // 등급 변경
+    /**
+     * [REQ8] 고객 등급 변경
+     * 현재 등급을 조회한 후 새 등급으로 UPDATE
+     * 변경 이력을 customer_history에 INSERT (트랜잭션 처리는 CustomerService 담당)
+     */
     private void updateCustomerGrade() {
         try {
             System.out.print("\n고객 ID 입력: ");
@@ -125,13 +139,19 @@ public class CustomerController {
         }
     }
 
-    // 고객 정보 변화 전후 매출 비교
+    /**
+     * [REQ14] 고객 정보 변화 전후 구매 분석
+     * customer_history에서 변경 이력을 조회하고
+     * 사용자가 선택한 변경 시점을 기준으로 orders 테이블에서 구매 통계를 비교한다.
+     * 변경 유형(지역/등급/지역+등급)을 자동으로 판별하여 출력한다.
+     */
     private void selectOrderStatByDemographic() {
         try {
             System.out.print("\n고객 ID 입력: ");
             int customerId = sc.nextInt();
             sc.nextLine();
 
+            // 고객 변경 이럭 조회
             ResultSet historyRs = customerService.getCustomerHistory(customerId);
 
             if (!historyRs.next()) {
@@ -139,10 +159,10 @@ public class CustomerController {
                 return;
             }
 
-            // 이력 목록 저장
+            // 고객 이력 목록 저장
             List<Object[]> historyList = new ArrayList<>();
             do {
-                // 변경 유형 판단
+                // old/new region_id, grade 비교로 변경 유형 판단
                 String changeType = "";
                 boolean regionChanged = historyRs.getInt("old_region_id") != historyRs.getInt("new_region_id");
                 boolean gradeChanged = !historyRs.getString("old_grade").equals(historyRs.getString("new_grade"));
@@ -181,7 +201,7 @@ public class CustomerController {
                         h[4] + " / " + h[6]);
             }
 
-            // 분석할 이력 선택
+            // 분석할 이력 번호 선택
             System.out.print("\n분석할 변경 이력 번호 선택: ");
             int selected = sc.nextInt();
             sc.nextLine();
@@ -194,7 +214,7 @@ public class CustomerController {
             Timestamp changedAt = (Timestamp) historyList.get(selected - 1)[1];
             String changeType = (String) historyList.get(selected - 1)[2];
 
-            // 변경 전후 구매 분석
+            // 선택한 시점 기준으로 변경 전후 구매 분석
             System.out.println("\n===== " + changeType + " 전후 구매 분석 =====");
 
             ResultSet beforeRs = customerService.getOrderStatBeforeChange(customerId, changedAt);
@@ -216,7 +236,11 @@ public class CustomerController {
         }
     }
 
-    // 지역별 고객 구매 현황
+    /**
+     * [REQ14] 지역별 고객 구매 현황
+     * customer + orders + region 테이블을 JOIN하여
+     * 지역별 주문 수, 총 구매액, 평균 구매액을 GROUP BY로 집계
+     */
     private void selectOrderStatByRegion() {
         try {
             ResultSet rs = customerService.getOrderStatByRegion();
@@ -235,7 +259,11 @@ public class CustomerController {
         }
     }
 
-    // 등급별 고객 구매 현황
+    /**
+     * [REQ14] 등급별 고객 구매 현황
+     * customer + orders 테이블을 JOIN하여
+     * 등급별 주문 수, 총 구매액, 평균 구매액을 GROUP BY로 집계
+     */
     private void selectOrderStatByGrade() {
         try {
             ResultSet rs = customerService.getOrderStatByGrade();

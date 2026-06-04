@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 public class DBUtil {
 
+    // DB 연결 정보 - 실행 환경에 맞게 수정
     private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
     private static final String USER = "root";
     private static final String PASSWORD = "0000";
