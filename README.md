@@ -150,4 +150,4 @@ java -cp "2026-Database.jar:lib/mysql-connector-j-8.0.33.jar" com.deliveryapp.Ma
 
 여기에 ERD 그림 넣는거 어떻게 생각하시나요? ㄱㄱ
 
-!ERD.png
+![ERD](sql/erd.png)
