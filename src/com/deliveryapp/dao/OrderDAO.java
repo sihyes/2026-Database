@@ -88,7 +88,10 @@ public class OrderDAO {
 
     // 주문 상세 조회 (VIEW 사용)
     public ResultSet getOrderDetail(int customerId) throws SQLException {
-        String sql = "SELECT * FROM order_detail_view WHERE customer_id = ?";
+        String sql = "SELECT v.*, c.name AS customer_name, c.current_grade " +
+                "FROM order_detail_view v " +
+                "JOIN customer c ON v.customer_id = c.customer_id " +
+                "WHERE v.customer_id = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, customerId);
         return pstmt.executeQuery();
