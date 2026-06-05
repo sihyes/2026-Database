@@ -5,6 +5,8 @@ import com.deliveryapp.service.RestaurantService;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -91,19 +93,39 @@ public class FoodMenuController {
             int menuId = sc.nextInt();
             sc.nextLine();
 
-            System.out.print("기준 변경 시각 입력 (예: 2025-03-01 09:00:00): ");
-            String changedAtStr = sc.nextLine();
-            Timestamp changedAt = Timestamp.valueOf(changedAtStr);
+            // 1) 가격 변경 이력을 화면에 보여준다 (사용자는 시각을 몰라도 됨)
+            ResultSet hist = restaurantService.getPriceChangeHistory(menuId);
+            List<Timestamp> changes = new ArrayList<>();
+            System.out.println("\n[가격 변경 이력]");
+            int idx = 1;
+            while (hist.next()) {
+                Timestamp t = hist.getTimestamp("changed_at");
+                changes.add(t);
+                System.out.printf("%d) %s : %,d원 → %,d원%n",
+                        idx++, t, hist.getInt("old_price"), hist.getInt("new_price"));
+            }
+            if (changes.isEmpty()) {
+                System.out.println("이 메뉴는 가격 변경 이력이 없습니다.");
+                return;
+            }
 
+            // 2) 변경이 여러 번이면 기준 선택, 한 번이면 자동
+            Timestamp changedAt;
+            if (changes.size() == 1) {
+                changedAt = changes.get(0);
+            } else {
+                System.out.print("기준이 될 변경 번호 선택: ");
+                int sel = sc.nextInt(); sc.nextLine();
+                changedAt = changes.get(sel - 1);
+            }
+
+            // 3) 선택된 시각으로 전후 매출 비교
             ResultSet rs = restaurantService.getSalesBeforeAfterPriceChange(menuId, changedAt);
             if (rs.next()) {
-                double before = rs.getDouble("sales_before");
-                double after = rs.getDouble("sales_after");
-                System.out.printf("변경 전 매출: %,.0f원%n", before);
-                System.out.printf("변경 후 매출: %,.0f원%n", after);
+                System.out.printf("기준 변경 시각: %s%n", changedAt);
+                System.out.printf("변경 전 매출: %,.0f원%n", rs.getDouble("sales_before"));
+                System.out.printf("변경 후 매출: %,.0f원%n", rs.getDouble("sales_after"));
             }
-        } catch (IllegalArgumentException e) {
-            System.out.println("날짜 형식이 올바르지 않습니다.");
         } catch (SQLException e) {
             System.out.println("오류 발생: " + e.getMessage());
         }

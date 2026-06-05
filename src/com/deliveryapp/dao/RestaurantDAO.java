@@ -140,4 +140,19 @@ public class RestaurantDAO {
         pstmt.setInt(1, menuId);
         return pstmt.executeQuery();
     }
+
+
+    /** 메뉴의 가격 변경 이력 조회 (전후 분석의 기준 시각을 사용자에게 묻지 않고 여기서 가져온다)
+     *
+     * @param menuId 조회할 메뉴 ID
+     * @return
+     * @throws SQLException
+     */
+    public ResultSet getPriceChangeHistory(int menuId) throws SQLException {
+        String sql = "SELECT history_id, old_price, new_price, changed_at " +
+                "FROM menu_price_history WHERE menu_id = ? ORDER BY changed_at";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, menuId);
+        return pstmt.executeQuery();
+    }
 }
