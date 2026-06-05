@@ -80,4 +80,9 @@ public class OrderService {
     public ResultSet getOrderDetail(int customerId) throws SQLException {
         return orderDAO.getOrderDetail(customerId);
     }
+
+    // 배달 유형과 거리 구간으로 배달비 정보 조회
+    public ResultSet getDeliveryFee(String deliveryType, String distanceCategory) throws SQLException {
+        return orderDAO.getDeliveryFee(deliveryType, distanceCategory);
+    }
 }

@@ -31,13 +31,15 @@ public class CustomerService {
     }
 
     // 지역 변경 + 이력 저장
-    public void updateCustomerRegion(int customerId, int oldRegionId, int newRegionId, String currentGrade) {
+    public void updateCustomerRegion(int customerId, int oldRegionId, int newRegionId, String currentGrade, String newAddress) {
         try {
             conn.setAutoCommit(false);
             customerDAO.updateCustomerRegion(customerId, newRegionId);
             customerDAO.insertCustomerHistory(customerId, oldRegionId, newRegionId, currentGrade, currentGrade);
+            customerDAO.resetDefaultAddress(customerId);
+            customerDAO.insertDeliveryAddress(customerId, newAddress);
             conn.commit();
-            System.out.println("지역 변경 완료!");
+            System.out.println("지역 및 배달 주소 변경 완료!");
         } catch (SQLException e) {
             try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             System.out.println("변경 실패: " + e.getMessage());
@@ -71,5 +73,7 @@ public class CustomerService {
     public ResultSet getOrderStatByGrade() throws SQLException {
         return customerDAO.getOrderStatByGrade();
     }
+
+
 
 }

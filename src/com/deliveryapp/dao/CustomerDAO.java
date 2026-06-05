@@ -14,11 +14,13 @@ public class CustomerDAO {
      * @return 고객 정보 ResultSet
      */
     public ResultSet getCustomer(int customerId) throws SQLException {
-        String sql = "SELECT * FROM customer WHERE customer_id=?";
+        String sql = "SELECT c.*, r.region_name, r.city " +
+                "FROM customer c " +
+                "LEFT JOIN region r ON c.region_id = r.region_id " +
+                "WHERE c.customer_id = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, customerId);
-        ResultSet rs = ps.executeQuery();
-        return rs;
+        return ps.executeQuery();
     }
 
     /**
@@ -162,4 +164,29 @@ public class CustomerDAO {
         return pstmt.executeQuery();
     }
 
+    /**
+     * 고객의 기본 배달지를 모두 해제한다.
+     * 새 배달 주소 등록 전에 호출하여 is_default = FALSE로 일괄 UPDATE한다.
+     * @param customerId 대상 고객 ID
+     */    public void resetDefaultAddress(int customerId) throws SQLException {
+        String sql = "UPDATE delivery_address SET is_default = FALSE WHERE customer_id = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, customerId);
+        pstmt.executeUpdate();
+    }
+
+    /**
+     * 새 배달 주소를 delivery_address 테이블에 INSERT한다.
+     * is_default = TRUE로 설정하여 기본 배달지로 등록한다.
+     * @param customerId 고객 ID
+     * @param addressDetail 새 배달 주소 상세 내용
+     */
+    public void insertDeliveryAddress(int customerId, String addressDetail) throws SQLException {
+        String sql = "INSERT INTO delivery_address (customer_id, address_detail, is_default) " +
+                "VALUES (?, ?, TRUE)";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, customerId);
+        pstmt.setString(2, addressDetail);
+        pstmt.executeUpdate();
+    }
 }

@@ -249,18 +249,18 @@ VALUES
 
 /* 9. coupon */
 INSERT INTO coupon (coupon_name, discount_type, discount_value, min_order_amount, expired_at) VALUES
-                                                                                                  ('WELCOME2025',   'fixed',   3000, 15000, '2025-12-31 23:59:59'),
-                                                                                                  ('SPRING10',      'percent', 10,   20000, '2025-06-30 23:59:59'),
-                                                                                                  ('CHICKEN2000',   'fixed',   2000, 10000, '2025-07-31 23:59:59'),
-                                                                                                  ('BIRTHDAY20',    'percent', 20,   25000, '2025-12-31 23:59:59'),
-                                                                                                  ('WEEKEND1000',   'fixed',   1000, 8000,  '2025-08-31 23:59:59'),
-                                                                                                  ('FIRST5000',     'fixed',   5000, 30000, '2025-09-30 23:59:59'),
-                                                                                                  ('SUMMER15',      'percent', 15,   20000, '2025-08-31 23:59:59'),
-                                                                                                  ('VIP25',         'percent', 25,   50000, '2025-12-31 23:59:59'),
-                                                                                                  ('LUNCH2500',     'fixed',   2500, 12000, '2025-07-31 23:59:59'),
-                                                                                                  ('DINNER1500',    'fixed',   1500, 10000, '2025-10-31 23:59:59'),
-                                                                                                  ('KOREAN12',      'percent', 12,   18000, '2025-11-30 23:59:59'),
-                                                                                                  ('WEEKDAY2000',   'fixed',   2000, 15000, '2025-09-30 23:59:59');
+                                                                                                  ('WELCOME2025',   'fixed',   3000, 15000, '2026-12-31 23:59:59'),
+                                                                                                  ('SPRING10',      'percent', 10,   20000, '2026-06-30 23:59:59'),
+                                                                                                  ('CHICKEN2000',   'fixed',   2000, 10000, '2026-07-31 23:59:59'),
+                                                                                                  ('BIRTHDAY20',    'percent', 20,   25000, '2026-12-31 23:59:59'),
+                                                                                                  ('WEEKEND1000',   'fixed',   1000, 8000,  '2026-08-31 23:59:59'),
+                                                                                                  ('FIRST5000',     'fixed',   5000, 30000, '2026-09-30 23:59:59'),
+                                                                                                  ('SUMMER15',      'percent', 15,   20000, '2026-08-31 23:59:59'),
+                                                                                                  ('VIP25',         'percent', 25,   50000, '2026-12-31 23:59:59'),
+                                                                                                  ('LUNCH2500',     'fixed',   2500, 12000, '2026-07-31 23:59:59'),
+                                                                                                  ('DINNER1500',    'fixed',   1500, 10000, '2026-10-31 23:59:59'),
+                                                                                                  ('KOREAN12',      'percent', 12,   18000, '2026-11-30 23:59:59'),
+                                                                                                  ('WEEKDAY2000',   'fixed',   2000, 15000, '2026-09-30 23:59:59');
 
 /* 10. orders */
 INSERT INTO orders (customer_id, restaurant_id, total_price, order_time, delivery_status, delivery_fee_id, address_id, coupon_id, discount_amount) VALUES
