@@ -150,4 +150,19 @@ public class OrderDAO {
         pstmt.setString(2, distanceCategory);
         return pstmt.executeQuery();
     }
+
+    /**
+     * 고객의 기본 배달지 주소 ID를 조회한다.
+     * 주문 등록 시 address_id 자동 설정에 사용한다.
+     * @param customerId 조회할 고객 ID
+     * @return address_id ResultSet (is_default = TRUE인 주소)
+     */
+    // 고객 기본 배달지 조회
+    public ResultSet getDefaultAddress(int customerId) throws SQLException {
+        String sql = "SELECT address_id FROM delivery_address " +
+                "WHERE customer_id = ? AND is_default = TRUE";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setInt(1, customerId);
+        return pstmt.executeQuery();
+    }
 }
