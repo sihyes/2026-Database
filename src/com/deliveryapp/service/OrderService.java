@@ -85,4 +85,9 @@ public class OrderService {
     public ResultSet getDeliveryFee(String deliveryType, String distanceCategory) throws SQLException {
         return orderDAO.getDeliveryFee(deliveryType, distanceCategory);
     }
+
+    // 기본 배송지 조회
+    public ResultSet getDefaultAddress(int customerId) throws SQLException {
+        return orderDAO.getDefaultAddress(customerId);
+    }
 }

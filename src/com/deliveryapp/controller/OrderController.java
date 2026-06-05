@@ -125,7 +125,14 @@ public class OrderController {
                 System.out.printf("추가됨: %,.0f원 x %d개%n", unitPrice, quantity);
             }
 
-            // 5. 배달 유형 선택
+            // 5. 고객 기본 배달지 조회
+            int addressId = 0;
+            ResultSet addressRs = orderService.getDefaultAddress(customerId);
+            if (addressRs.next()) {
+                addressId = addressRs.getInt("address_id");
+            }
+
+            // 6. 배달 유형 선택
             System.out.println("\n===== 배달 유형 선택 =====");
             System.out.println("1. 한집배달");
             System.out.println("2. 알뜰배달");
@@ -169,7 +176,7 @@ public class OrderController {
                 System.out.printf("배달비: %,.0f원%n", deliveryFee);
             }
 
-            // 6. 쿠폰 코드 입력 (선택사항)
+            // 7. 쿠폰 코드 입력 (선택사항)
             // fixed: 정액 할인 / percent: 정률 할인
             System.out.print("\n쿠폰 코드 입력 (없으면 엔터): ");
             String couponCode = sc.nextLine().trim();
@@ -198,7 +205,7 @@ public class OrderController {
                 }
             }
 
-            // 7. 최종 금액 출력 및 주문 확인
+            // 8. 최종 금액 출력 및 주문 확인
             double finalPrice = totalPrice - discountAmount + deliveryFee;
             System.out.printf("%n상품 금액: %,.0f원 / 할인: %,.0f원 / 배달비: %,.0f원 / 최종: %,.0f원%n",
                     totalPrice, discountAmount, deliveryFee, finalPrice);
@@ -210,9 +217,10 @@ public class OrderController {
                 return;
             }
 
-            // 8. orders + order_item INSERT (트랜잭션)
+            // 9. orders + order_item INSERT (트랜잭션)
             Order order = new Order(customerId, restaurantId, finalPrice,
-                    "pending", deliveryFeeId == 0 ? null : deliveryFeeId, null,
+                    "pending", deliveryFeeId == 0 ? null : deliveryFeeId,
+                    addressId == 0 ? null : addressId,  // ← address_id 반영
                     couponId == 0 ? null : couponId, discountAmount);
             orderService.insertOrder(order, orderItems);
 
