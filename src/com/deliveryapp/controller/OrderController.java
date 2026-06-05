@@ -234,10 +234,13 @@ public class OrderController {
 
             ResultSet rs = orderService.getOrderDetail(customerId);
 
-            System.out.println("\n고객명 | 등급   | 주문ID | 주문시각         | 상태      | 메뉴명     | 수량 | 단가    | 소계    | 배달비  | 배달유형");
-            System.out.println("--------------------------------------------------------------------------------------------");
+            System.out.println("\n고객명 | 등급   | 주문ID | 주문시각         | 상태      | 메뉴명     | 수량 | 단가    | 소계    | 배달비  | 배달유형 | 쿠폰 | 할인");
+            System.out.println("----------------------------------------------------------------------------------------------------");
             while (rs.next()) {
-                System.out.printf("%-6s | %-6s | %-5d | %-16s | %-9s | %-10s | %3d | %,6.0f | %,6.0f | %,6.0f | %s%n",
+                String couponName = rs.getString("coupon_name");
+                couponName = (couponName == null) ? "없음" : couponName;
+
+                System.out.printf("%-6s | %-6s | %-5d | %-16s | %-9s | %-10s | %3d | %,6.0f | %,6.0f | %,6.0f | %-8s | %-12s | %,.0f원%n",
                         rs.getString("customer_name"),
                         rs.getString("current_grade"),
                         rs.getInt("order_id"),
@@ -248,7 +251,9 @@ public class OrderController {
                         rs.getDouble("ordered_unit_price"),
                         rs.getDouble("item_total"),
                         rs.getDouble("delivery_fee"),
-                        rs.getString("delivery_type"));
+                        rs.getString("delivery_type"),
+                        couponName,
+                        rs.getDouble("discount_amount"));
             }
         } catch (SQLException e) {
             System.out.println("오류 발생: " + e.getMessage());

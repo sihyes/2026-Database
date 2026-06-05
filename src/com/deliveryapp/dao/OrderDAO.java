@@ -123,11 +123,13 @@ public class OrderDAO {
      */
     public ResultSet getOrderDetail(int customerId) throws SQLException {
         String sql = "SELECT v.*, c.name AS customer_name, c.current_grade, " +
-                "df.fee AS delivery_fee, df.delivery_type " +
+                "df.fee AS delivery_fee, df.delivery_type, " +
+                "cp.coupon_name, v.discount_amount " +
                 "FROM order_detail_view v " +
                 "JOIN customer c ON v.customer_id = c.customer_id " +
                 "LEFT JOIN orders o ON v.order_id = o.order_id " +
                 "LEFT JOIN delivery_fee df ON o.delivery_fee_id = df.delivery_fee_id " +
+                "LEFT JOIN coupon cp ON o.coupon_id = cp.coupon_id " +
                 "WHERE v.customer_id = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, customerId);
