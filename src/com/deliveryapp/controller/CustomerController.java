@@ -31,8 +31,8 @@ public class CustomerController {
             System.out.println("2. 고객 지역 변경");
             System.out.println("3. 고객 등급 변경");
             System.out.println("4. 고객 정보 변화 전후 구매 분석");
-            System.out.println("5. 지역별 고객 구매 현황");
-            System.out.println("6. 등급별 고객 구매 현황");
+            System.out.println("5. 등급별 고객 구매 현황");
+            System.out.println("6. 지역별 고객 구매 현황");
             System.out.println("0. 이전 메뉴");
             System.out.print("선택: ");
 
@@ -65,6 +65,9 @@ public class CustomerController {
                 System.out.printf("이름: %s%n", rs.getString("name"));
                 System.out.printf("나이: %d%n", rs.getInt("age"));
                 System.out.printf("성별: %s%n", rs.getString("gender"));
+                System.out.printf("지역: %s (%s)%n",
+                        rs.getString("region_name"),
+                        rs.getString("city"));
                 System.out.printf("등급: %s%n", rs.getString("current_grade"));
             } else {
                 System.out.println("존재하지 않는 고객이에요.");
@@ -77,7 +80,7 @@ public class CustomerController {
     /**
      * [REQ8] 고객 지역 변경
      * 현재 지역 ID를 조회한 후 새 지역 ID로 UPDATE
-     * 변경 이력을 customer_history에 INSERT (트랜잭션 처리는 CustomerService 담당)
+     * 변경 이력을 customer_history에 INSERT
      */
     private void updateCustomerRegion() {
         try {
@@ -85,7 +88,6 @@ public class CustomerController {
             int customerId = sc.nextInt();
             sc.nextLine();
 
-            // 현재 정보 조회
             ResultSet rs = customerService.getCustomer(customerId);
             if (!rs.next()) {
                 System.out.println("존재하지 않는 고객이에요.");
@@ -100,8 +102,12 @@ public class CustomerController {
             int newRegionId = sc.nextInt();
             sc.nextLine();
 
-            customerService.updateCustomerRegion(customerId, oldRegionId, newRegionId, currentGrade);
+            // 새 배달 주소 입력
+            System.out.print("새 배달 주소 입력: ");
+            String newAddress = sc.nextLine();
 
+            customerService.updateCustomerRegion(customerId, oldRegionId, newRegionId,
+                    currentGrade, newAddress);
         } catch (SQLException e) {
             System.out.println("오류 발생: " + e.getMessage());
         }
