@@ -210,7 +210,7 @@ INSERT INTO delivery_fee (delivery_type, distance_category, fee) VALUES
                                                                      ('가게배달', '단거리', 1500),
                                                                      ('가게배달', '중거리', 2500),
                                                                      ('가게배달', '장거리', 3500),
-                                                                     ('무료배달', '전체', 0);;
+                                                                     ('무료배달', '전체', 0);
 
 /*8. delivery_address     ← customer 참조*/
 INSERT INTO delivery_address
