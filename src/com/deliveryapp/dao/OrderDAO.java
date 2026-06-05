@@ -122,12 +122,30 @@ public class OrderDAO {
      * @return 주문 상세 ResultSet (customer_name, current_grade, order_id, menu_name 등 포함)
      */
     public ResultSet getOrderDetail(int customerId) throws SQLException {
-        String sql = "SELECT v.*, c.name AS customer_name, c.current_grade " +
+        String sql = "SELECT v.*, c.name AS customer_name, c.current_grade, " +
+                "df.fee AS delivery_fee, df.delivery_type " +
                 "FROM order_detail_view v " +
                 "JOIN customer c ON v.customer_id = c.customer_id " +
+                "LEFT JOIN orders o ON v.order_id = o.order_id " +
+                "LEFT JOIN delivery_fee df ON o.delivery_fee_id = df.delivery_fee_id " +
                 "WHERE v.customer_id = ?";
         PreparedStatement pstmt = conn.prepareStatement(sql);
         pstmt.setInt(1, customerId);
+        return pstmt.executeQuery();
+    }
+
+    /**
+     * 배달 유형과 거리 구간으로 배달비 정보를 조회한다.
+     * @param deliveryType 배달 유형 (한집배달/알뜰배달/가게배달/무료배달)
+     * @param distanceCategory 거리 구간 (단거리/중거리/장거리/전체)
+     * @return delivery_fee_id, fee ResultSet
+     */
+    public ResultSet getDeliveryFee(String deliveryType, String distanceCategory) throws SQLException {
+        String sql = "SELECT delivery_fee_id, fee FROM delivery_fee " +
+                "WHERE delivery_type = ? AND distance_category = ?";
+        PreparedStatement pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, deliveryType);
+        pstmt.setString(2, distanceCategory);
         return pstmt.executeQuery();
     }
 }
