@@ -11,6 +11,7 @@ public class OrderService {
     private OrderDAO orderDAO = new OrderDAO();
     private Connection conn = DBUtil.getConnection();
 
+    // 주문하기
     public int insertOrder(Order order, List<int[]> orderItems){
         try{
             conn.setAutoCommit(false);

@@ -12,6 +12,7 @@ public class ReviewService {
     private ReviewDAO reviewDAO = new ReviewDAO();
     private Connection conn = DBUtil.getConnection();
 
+    // 리뷰 등록
     public void insertReview(Review review) {
         try {
             conn.setAutoCommit(false);
@@ -26,18 +27,22 @@ public class ReviewService {
         }
     }
 
+    // 고객 ID로 리뷰 조회
     public ResultSet getReviewDetailByCustomer(int customerId) throws SQLException {
         return reviewDAO.getReviewDetailByCustomer(customerId);
     }
 
+    // 식당 ID로 리뷰 조회
     public ResultSet getReviewDetailByRestaurant(int restaurantId) throws SQLException {
         return reviewDAO.getReviewDetailByRestaurant(restaurantId);
     }
 
+    // 별점 조회
     public ResultSet getRestaurantRatingStat() throws SQLException {
         return reviewDAO.getRestaurantRatingStat();
     }
 
+    // 리뷰 삭제
     public void deleteReview(int reviewId) {
         try {
             conn.setAutoCommit(false);
@@ -52,6 +57,7 @@ public class ReviewService {
         }
     }
 
+    // 리뷰 등록 가능 검증
     public boolean canCreateReview(int orderId) throws SQLException {
         ResultSet delivered = reviewDAO.getDeliveredOrder(orderId);
         if (!delivered.next()) return false;
@@ -59,6 +65,7 @@ public class ReviewService {
         return !exists.next();
     }
 
+    // 별점 범위 검증
     public boolean isRatingValid(double rating) {
         return rating >= 0.0 && rating <= 5.0;
     }
