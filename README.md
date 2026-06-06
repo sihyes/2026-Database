@@ -8,8 +8,8 @@
 
 | 이름 | 담당 테이블 & 뷰 | 담당 역할 |
 | --- | --- | --- |
-| 이시은 (팀장) | review,  order_detail_view  | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현, 검토 |
-| 박고은 | orders, order_item, coupon | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현 |
+| 이시은 (팀장) | review,  review_detail_view  | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현, 검토 |
+| 박고은 | orders, order_item, coupon, order_detail_view | Database 구현 및 DB(JDBC) 연동, 애플리케이션 구현 |
 | 장채린 | customer, customer_history, delivery_address, region | 레포트 작성 및 자료 제작 |
 | 박시연 | restaurant, menu, menu_price_history, delivery_fee | 레포트 작성 및 자료 제작, 발표 |
 
