@@ -49,7 +49,7 @@ private static final String PASSWORD = "your_password";
 ## 애플리케이션 실행
 
 ```bash
-java -cp "2026-Database.jar:lib/mysql-connector-j-8.0.33.jar" com.deliveryapp.Main   (Windows는 : 대신 ;)
+java -jar 2026-Database.jar
 ```
 
 - **메인 클래스:** `com.deliveryapp.Main`
