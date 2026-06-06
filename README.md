@@ -47,6 +47,7 @@ private static final String PASSWORD = "your_password";
 ---
 
 ## 애플리케이션 실행
+jar 파일이 있는 경로에서 다음을 실행하세요.
 
 ```bash
 java -jar 2026-Database.jar
