@@ -51,4 +51,8 @@ public class RestaurantService {
     public ResultSet getMenuInfo(int menuId) throws SQLException {
         return restaurantDAO.getMenuInfo(menuId);
     }
+
+    public ResultSet getPriceChangeHistory(int menuId) throws SQLException {
+        return restaurantDAO.getPriceChangeHistory(menuId);
+    }
 }
