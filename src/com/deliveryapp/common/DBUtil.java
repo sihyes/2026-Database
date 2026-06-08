@@ -6,10 +6,19 @@ import java.sql.SQLException;
 
 public class DBUtil {
 
-    // DB 연결 정보 - 실행 환경에 맞게 수정
-    private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
-    private static final String USER = "root";
-    private static final String PASSWORD = "0000";
+//    private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
+//    private static final String USER = "root";
+//    private static final String PASSWORD = "0000";
+
+    private static String URL = "";
+    private static String USER = "";
+    private static String PASSWORD = "";
+
+    public static void init(String host, String port, String database, String user, String password) {
+        URL = "jdbc:mysql://" + host + ":" + port + "/" + database;
+        USER = user;
+        PASSWORD = password;
+    }
 
     private static Connection connection = null;
 
