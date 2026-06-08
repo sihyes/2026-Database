@@ -135,7 +135,7 @@ public class CustomerController {
             int currentRegionId = rs.getInt("region_id");
 
             System.out.printf("현재 등급: %s%n", oldGrade);
-            System.out.println("새 등급 입력 (Bronze/Silver/Gold/VIP): ");
+            System.out.print("새 등급 입력 (Bronze/Silver/Gold/VIP): ");
             String newGrade = sc.nextLine();
 
             customerService.updateCustomerGrade(customerId, oldGrade, newGrade, currentRegionId);

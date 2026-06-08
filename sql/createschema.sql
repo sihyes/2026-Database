@@ -205,3 +205,9 @@ FROM review r
               ON o.customer_id = c.customer_id
          JOIN restaurant res
               ON o.restaurant_id = res.restaurant_id;
+
+
+CREATE INDEX idx_orders_customer ON orders(customer_id);
+CREATE INDEX idx_orders_time     ON orders(order_time);
+CREATE INDEX idx_orderitem_menu  ON order_item(menu_id);
+CREATE INDEX idx_menu_restaurant ON menu(restaurant_id);

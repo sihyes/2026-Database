@@ -11,6 +11,7 @@ public class OrderService {
     private OrderDAO orderDAO = new OrderDAO();
     private Connection conn = DBUtil.getConnection();
 
+    // 주문하기
     public int insertOrder(Order order, List<int[]> orderItems){
         try{
             conn.setAutoCommit(false);
@@ -84,5 +85,10 @@ public class OrderService {
     // 배달 유형과 거리 구간으로 배달비 정보 조회
     public ResultSet getDeliveryFee(String deliveryType, String distanceCategory) throws SQLException {
         return orderDAO.getDeliveryFee(deliveryType, distanceCategory);
+    }
+
+    // 기본 배송지 조회
+    public ResultSet getDefaultAddress(int customerId) throws SQLException {
+        return orderDAO.getDefaultAddress(customerId);
     }
 }
