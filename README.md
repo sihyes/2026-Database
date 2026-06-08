@@ -25,17 +25,7 @@ MySQL에서 아래 명령어를 실행하세요.
 CREATE DATABASE food_delivery;
 ```
 
-### 2. DB 연결 정보 수정
-
-`src/com/deliveryapp/common/DBUtil.java` 파일을 열고 아래 username과 password를 본인 환경에 맞게 수정하세요.
-
-```java
-private static final String URL = "jdbc:mysql://localhost:3306/food_delivery";
-private static final String USER = "root"; //혹은 권한이 있는 사용자
-private static final String PASSWORD = "your_password";
-```
-
-### 3. 스키마 및 초기 데이터 삽입
+### 2. 스키마 및 초기 데이터 삽입
 
 아래 순서대로 SQL 파일을 실행하세요.
 
@@ -50,7 +40,7 @@ private static final String PASSWORD = "your_password";
 jar 파일이 있는 경로에서 다음을 실행하세요.
 
 ```bash
-java -jar 2026-Database.jar
+java -jar 3242_jar.jar
 ```
 
 - **메인 클래스:** `com.deliveryapp.Main`
